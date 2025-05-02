@@ -176,3 +176,4 @@ cython_debug/
 # Custom
 .DS_Store
 tests/test_videos
+log.json
