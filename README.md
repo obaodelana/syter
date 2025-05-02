@@ -1,4 +1,4 @@
-# Syter: Automatically generate shorts from a YouTube video
+# Syter
 
 > [!INFO]
 > Work in progress.
