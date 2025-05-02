@@ -19,6 +19,12 @@ class VideoFormat:
     def __str__(self) -> str:
         return f"{self.id} (.{self.file_extension}): {self.resolution} ({self.file_size})"
 
+    def __lt__(self, other: "VideoFormat") -> bool:
+        if self.file_size.B != 0 and other.file_size.B != 0:
+            return self.file_size < other.file_size
+        else:
+            return self.resolution < other.resolution
+
     @staticmethod
     def from_json(json_content: str) -> list["VideoFormat"]:
         assert type(json_content) is str, "Only give me json as a string"
@@ -38,9 +44,6 @@ class VideoFormat:
         try:
             json_dict = json.loads(json_content, object_hook=as_video_format)
             formats: list[VideoFormat] = json_dict["formats"]
-
-            return sorted(formats, key=lambda f: (f.file_size.B if f.file_size.B != 0
-                                                  else float("inf"),
-                                                  f.resolution))
+            return sorted(formats)
         except json.JSONDecodeError:
             return []

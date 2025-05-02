@@ -2,6 +2,9 @@ from youtube_dl import YoutubeDL
 from models.video_format import VideoFormat
 from util.yd_logger import YDLogger
 
+# TODO: Download function
+# TODO: Stream function
+
 
 class YD:
     def __init__(self, link: str):
@@ -23,6 +26,8 @@ class YD:
         }
         with YoutubeDL(options) as yd:
             yd.download([self._link])
+            if len(yd_logger.error_log) != 0:
+                raise Exception(yd_logger.error_log[0])
 
         # JSON is always the last message printed
         json_content = yd_logger.debug_log[-1]
@@ -35,12 +40,8 @@ class YD:
 
     @property
     def highest_quality_format(self) -> VideoFormat:
-        for i in range(len(self.formats) - 1, -1, -1):
-            if self.formats[i].file_size.B != 0:
-                return self._available_formats[i]
+        return self._available_formats[-1]
 
     @property
     def lowest_quality_format(self) -> VideoFormat:
-        for i in range(len(self.formats)):
-            if self.formats[i].file_size.B != 0:
-                return self._available_formats[i]
+        return self._available_formats[0]

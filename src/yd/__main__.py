@@ -1,4 +1,4 @@
-from .yd import YD
+from yd import YD
 
 
 if __name__ == "__main__":
