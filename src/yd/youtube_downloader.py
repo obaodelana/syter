@@ -3,10 +3,12 @@ from yt_dlp import YoutubeDL
 
 from models.video_format import VideoFormat
 from models.file_extension import FileExtension
-from util.yd_logger import YDLogger
+from models.resolution import Resolution
+from models.file_size import FileSize
 
-# TODO: Download function
+# TODO: In constructor, take in start and end positions
 # TODO: Stream function
+# TODO: See how to speed up download
 
 
 class YD:
@@ -19,13 +21,11 @@ class YD:
         if len(self._available_formats) == 0:
             raise Exception("This video is invalid")
 
-    def _get_available_formats(self) -> list["VideoFormat"]:
-        yd_logger = YDLogger()
+    def _get_available_formats(self) -> list[VideoFormat]:
         options = {
             "simulate": True,
             "quiet": True,
             "dump_single_json": True,
-            "logger": yd_logger
         }
         with YoutubeDL(options) as yd:
             info_dict: dict = yd.extract_info(self._link, download=False)
@@ -43,25 +43,55 @@ class YD:
     def lowest_quality_format(self) -> VideoFormat:
         return self._available_formats[0]
 
-    def get_formats(self, extension: FileExtension | str | None) -> list[VideoFormat]:
-        assert extension is None\
-            or type(extension) is str or isinstance(extension, FileExtension)
+    def get_formats(self,
+                    extensions: list[FileExtension] | None = None,
+                    min_resolution: Resolution | None = None,
+                    max_resolution: Resolution | None = None,
+                    include_audio: bool = True,
+                    max_file_size: FileSize | None = None) -> list[VideoFormat]:
+        assert extensions is None or\
+            type(extensions) is list
+        assert min_resolution is None or\
+            isinstance(min_resolution, Resolution)
+        assert max_file_size is None or\
+            isinstance(max_file_size, FileSize)
+        assert type(include_audio) is bool
 
-        if type(extension) is str:
-            extension = FileExtension(extension)
-
-        if extension is None:
+        if (extensions, min_resolution, max_resolution, max_file_size) ==\
+                (None, None, None, None):
             return self.formats
         else:
-            desired_formats = [f for f in self.formats
-                               if f.file_extension == extension]
+            def _filter_func(f: VideoFormat) -> bool:
+                if extensions is not None and f.file_extension not in extensions:
+                    return False
+                if min_resolution is not None and\
+                    (f.resolution.fps, f.resolution.width, f.resolution.height) <\
+                        (min_resolution.fps, min_resolution.width, min_resolution.height):
+                    return False
+                if max_resolution is not None and\
+                    (f.resolution.fps, f.resolution.width, f.resolution.height) >\
+                        (max_resolution.fps, max_resolution.width, max_resolution.height):
+                    return False
+                if not include_audio and f.resolution == Resolution.audio_only():
+                    return False
+                if max_file_size is not None and\
+                        (f.file_size.B == 0 or f.file_size > max_file_size):
+                    return False
+
+                return True
+
+            desired_formats = list(filter(_filter_func, self.formats))
             return desired_formats
 
     def download(self,
                  format: VideoFormat | None = None,
-                 output_path: str | None = None) -> bool:
+                 output_path: str | None = None,
+                 extract_audio: bool = False,
+                 print_progress: bool = False) -> bool:
         assert format is None or isinstance(format, VideoFormat)
         assert output_path is None or type(output_path) is str
+        assert type(extract_audio) is bool
+        assert type(print_progress) is bool
 
         if format is None:
             format = self.lowest_quality_format
@@ -71,16 +101,27 @@ class YD:
         else:
             p = Path.cwd()
 
-        logger = YDLogger()
+        def progress_hook(info: dict) -> None:
+            # They already do the printing
+            if info["status"] == "downloading":
+                pass
+            elif info["status"] == "finished":
+                print("\nDone downloading.")
+
         options = {
             "quiet": True,
-            "logger": logger,
-            "format": format.id,
+            "format": str(format.id),
+            "progress_hooks": [progress_hook] if print_progress else [],
+            "keepvideo": True,
+            "postprocessors": [{
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "wav"
+            },] if extract_audio else [],
             # If `p` is a directory, put inside directory and store as video title
-            "outtmpl": (f"{p}/%(title)s.%(ext)s" if p.is_dir() or "/" in str(p)
+            "outtmpl": (f"{p}/%(title)s.%(ext)s" if p.is_dir() or str(p).endswith("/")
                         else str(p))
         }
         with YoutubeDL(options) as yd:
-            yd.download([self._link])
+            return_code = yd.download([self._link])
 
-        return len(logger.error_log) == 0  # Successful means no errors
+        return return_code

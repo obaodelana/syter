@@ -30,5 +30,11 @@ class FileSize:
         else:
             return f"{self.GB:.2f} GB"
 
-    def __lt__(self, other: "FileSize"):
+    def __eq__(self, other: "FileSize") -> bool:
+        return self.B == other.B
+
+    def __lt__(self, other: "FileSize") -> bool:
         return self.B < other.B
+
+    def __gt__(self, other: "FileSize") -> bool:
+        return self.B > other.B
