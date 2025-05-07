@@ -19,8 +19,7 @@ if __name__ == "__main__":
     )
     print(*available_formats, sep="\n")
     if len(available_formats) != 0:
-        video.download(output_path="~/Downloads/music/QT2",
-                       format=available_formats[0],
+        video.download(format=available_formats[0],
                        print_progress=True)
     else:
         print("No audio files available.")
