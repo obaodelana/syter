@@ -6,10 +6,6 @@ from models.file_extension import FileExtension
 from models.resolution import Resolution
 from models.file_size import FileSize
 
-# TODO: In constructor, take in start and end positions
-# TODO: Stream function
-# TODO: See how to speed up download
-
 
 class YD:
     def __init__(self, link: str):
@@ -28,7 +24,8 @@ class YD:
             "dump_single_json": True,
         }
         with YoutubeDL(options) as yd:
-            info_dict: dict = yd.extract_info(self._link, download=False)
+            info_dict: dict = yd.sanitize_info(
+                yd.extract_info(self._link, download=False))
             return VideoFormat.from_dict(info_dict)
 
     @property
