@@ -10,16 +10,16 @@ class TranscriptTime:
     def __str__(self) -> str:
         s = self.value
 
-        hours = s // 3600.0
+        hours = int(s // 3600.0)
         s -= hours * 3600
 
-        minutes = s // 60.0
+        minutes = int(s // 60.0)
         s -= minutes * 60
 
         seconds = int(s)
 
-        string = f"{minutes:02i}:{seconds:02i}"
+        string = f"{minutes:02d}:{seconds:02d}"
         if hours > 0:
-            string = f"{hours:02i}:" + string
+            string = f"{hours:02d}:" + string
 
         return string

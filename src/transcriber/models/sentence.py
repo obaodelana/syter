@@ -23,7 +23,7 @@ class Sentence:
 
     @property
     def text(self) -> str:
-        return " ".join(self._words)
+        return " ".join([w.text for w in self._words])
 
     def __str__(self) -> str:
-        return f"[${self.start_time}-{self.end_time}] {self.text}"
+        return f"[{self.start_time} - {self.end_time}] {self.text}"

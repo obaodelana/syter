@@ -34,4 +34,4 @@ class Transcript:
         return self._sentences[index]
 
     def __str__(self) -> str:
-        return "\n".join(self._sentences)
+        return "\n".join([str(s) for s in self._sentences])
