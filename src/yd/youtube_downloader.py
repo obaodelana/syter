@@ -1,5 +1,8 @@
 from pathlib import Path
 from yt_dlp import YoutubeDL
+from util.yd_logger import YDLogger
+from io import BytesIO
+import subprocess
 
 from models.video_format import VideoFormat
 from models.file_extension import FileExtension
@@ -83,12 +86,10 @@ class YD:
     def download(self,
                  format: VideoFormat | None = None,
                  output_path: str | None = None,
-                 extract_audio: bool = False,
-                 print_progress: bool = False) -> bool:
+                 extract_audio: bool = False) -> bool:
         assert format is None or isinstance(format, VideoFormat)
         assert output_path is None or type(output_path) is str
         assert type(extract_audio) is bool
-        assert type(print_progress) is bool
 
         if format is None:
             format = self.lowest_quality_format
@@ -98,18 +99,13 @@ class YD:
         else:
             p = Path.cwd()
 
-        def progress_hook(info: dict) -> None:
-            # They already do the printing
-            if info["status"] == "downloading":
-                pass
-            elif info["status"] == "finished":
-                print("\nDone downloading.")
-
+        logger = YDLogger()
         options = {
             "quiet": True,
             "format": str(format.id),
-            "progress_hooks": [progress_hook] if print_progress else [],
+            "logger": logger,
             "keepvideo": True,
+            "noplaylist": True,
             "postprocessors": [{
                 "key": "FFmpegExtractAudio",
                 "preferredcodec": "wav"
@@ -121,4 +117,22 @@ class YD:
         with YoutubeDL(options) as yd:
             return_code = yd.download([self._link])
 
-        return return_code
+        return return_code == 0
+
+    def open(self, format: VideoFormat | None = None) -> BytesIO | None:
+        assert format is None or isinstance(format, VideoFormat)
+
+        if format is None:
+            format = self.lowest_quality_format
+
+        args = ["yt-dlp",
+                "-q",
+                "--no-playlist",
+                "-f", str(format.id),
+                "-o", "-",
+                self._link]
+        try:
+            yd = subprocess.run(args, capture_output=True)
+            return BytesIO(yd.stdout)
+        except subprocess.CalledProcessError:
+            return None
