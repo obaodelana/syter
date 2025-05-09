@@ -14,8 +14,8 @@ class Resolution:
         return Resolution(0, 0, 0)
 
     def __str__(self) -> str:
-        if self._fps > 0:
-            return f"{self._height}p{self._fps}"
+        if self.fps > 0:
+            return f"{self.height}p{self.fps}"
         return "audio only"
 
     def __eq__(self, other: "Resolution") -> bool:
