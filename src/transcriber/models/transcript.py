@@ -1,3 +1,4 @@
+from .word import Word
 from .sentence import Sentence
 from .transcript_time import TranscriptTime
 
@@ -8,6 +9,37 @@ class Transcript:
         assert len(sentences) > 0
 
         self._sentences = sentences
+
+    @classmethod
+    def from_json(cls, json_dict: dict) -> "Transcript":
+        assert type(json_dict) is dict
+        assert "monologues" in json_dict, "JSON is not a RevAI response"
+
+        word_list: list[Word] = []
+        sentences: list[Sentence] = []
+        for monologue in json_dict["monologues"]:
+            for element in monologue["elements"]:
+                if element["type"] == "text":
+                    word_list.append(Word(
+                        float(element["ts"]),
+                        float(element["end_ts"]),
+                        element["value"]
+                    ))
+                elif element["type"] == "punct":
+                    punctuation = element["value"]
+                    if len(word_list) > 0:
+                        # Add punctuation to last word
+                        word_list[-1].text += punctuation
+                        # Full stop denotes sentence end
+                        if punctuation == ".":
+                            sentences.append(Sentence(word_list.copy()))
+                            word_list.clear()
+
+        # If world list is not empty, then there's a remaining sentence
+        if len(word_list) > 0:
+            sentences.append(Sentence(word_list.copy()))
+
+        return cls(sentences)
 
     @property
     def start_time(self) -> TranscriptTime:
