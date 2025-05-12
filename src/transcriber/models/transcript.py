@@ -35,7 +35,7 @@ class Transcript:
                             sentences.append(Sentence(word_list.copy()))
                             word_list.clear()
 
-        # If world list is not empty, then there's a remaining sentence
+        # If word list is not empty, then there's a remaining sentence
         if len(word_list) > 0:
             sentences.append(Sentence(word_list.copy()))
 
