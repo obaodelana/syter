@@ -47,7 +47,8 @@ class YD:
                     extensions: list[FileExtension] | None = None,
                     min_resolution: Resolution | None = None,
                     max_resolution: Resolution | None = None,
-                    include_audio: bool = True,
+                    include_audio_only: bool = True,
+                    include_video_only: bool = True,
                     max_file_size: FileSize | None = None) -> list[VideoFormat]:
         assert extensions is None or\
             type(extensions) is list
@@ -55,7 +56,7 @@ class YD:
             isinstance(min_resolution, Resolution)
         assert max_file_size is None or\
             isinstance(max_file_size, FileSize)
-        assert type(include_audio) is bool
+        assert type(include_audio_only) is bool
 
         if (extensions, min_resolution, max_resolution, max_file_size) ==\
                 (None, None, None, None):
@@ -72,7 +73,9 @@ class YD:
                     (f.resolution.fps, f.resolution.width, f.resolution.height) >\
                         (max_resolution.fps, max_resolution.width, max_resolution.height):
                     return False
-                if not include_audio and f.resolution == Resolution.audio_only():
+                if not include_audio_only and f.resolution.is_audio_only:
+                    return False
+                if not include_video_only and f.resolution.is_video_only:
                     return False
                 if max_file_size is not None and\
                         (f.file_size.B == 0 or f.file_size > max_file_size):
