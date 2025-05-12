@@ -26,8 +26,8 @@ class VideoFormat:
         else:
             return self.resolution < other.resolution
 
-    @staticmethod
-    def from_dict(dct: dict) -> list["VideoFormat"]:
+    @classmethod
+    def from_dict(cls, dct: dict) -> list["VideoFormat"]:
         assert type(dct) is dict
 
         def _get_int(val) -> int:
@@ -44,17 +44,18 @@ class VideoFormat:
                 if id == 0:  # Ids should be numbers
                     continue
                 width = _get_int(raw_format.get("width"))
-                height = _get_int(raw_format.get("width"))
+                height = _get_int(raw_format.get("height"))
                 fps = _get_int(raw_format.get("fps"))
+                audio_channels = _get_int(raw_format.get("audio_channels"))
                 file_extension = raw_format.get("ext")
                 if file_extension not in FileExtension.__members__.values():
                     continue
                 file_size = _get_int(raw_format.get("filesize",
                                                     raw_format.get("filesize_approx")))
 
-                formats.append(VideoFormat(
+                formats.append(cls(
                     id,
-                    Resolution(width, height, fps),
+                    Resolution(width, height, fps, audio_channels),
                     FileExtension(file_extension),
                     FileSize(file_size)
                 ))
