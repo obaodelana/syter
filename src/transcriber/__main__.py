@@ -1,24 +1,23 @@
-from models.word import Word
-from models.sentence import Sentence
-from models.transcript import Transcript
+from main import Transcriber
 
-if __name__ == "__main__":
-    dummy_transcript = Transcript([
-        Sentence([
-            Word(0.305, 0.525, "In"),
-            Word(0.525, 0.685, "this"),
-            Word(0.685, 0.885, "video"),
-        ]),
-        Sentence([
-            Word(42.425, 42.645, "But"),
-            Word(42.785, 43.005, "the"),
-            Word(43.005, 43.245, "goal"),
-        ]),
-        Sentence([
-            Word(142.185, 142.465, "it's"),
-            Word(142.465, 142.625, "fairly"),
-            Word(142.695, 142.985, "easy"),
-        ])
-    ])
 
-    print(dummy_transcript)
+def main():
+    media_url = input("URL to media file: ")
+    webhook_url = input("Webhook URL: ")
+
+    transcriber = Transcriber("en", webhook_url)
+    job_id = transcriber.submit_job(media_url)
+
+    finished = input("Has the job finished? (y/n)")
+    while finished.lower() != 'y':
+        finished = input("Has the job finished? (y/n)")
+
+    transcript = transcriber.retrieve_transcript(job_id)
+    if transcript:
+        print("Here's your transcript:")
+        print(transcript)
+    else:
+        print("Failed to get transcript")
+
+
+main()
