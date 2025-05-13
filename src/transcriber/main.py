@@ -17,7 +17,7 @@ class Transcriber:
         self._callback_url = webhook_url
         self._client = apiclient.RevAiAPIClient(api_key)
 
-    def submit_file(self, url: str) -> int:
+    def submit_job(self, url: str) -> int:
         assert type(url) is str
 
         job = self._client.submit_job_url(
