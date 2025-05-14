@@ -27,8 +27,8 @@ class VideoFormat:
             return self.resolution < other.resolution
 
     @classmethod
-    def from_dict(cls, dct: dict) -> list["VideoFormat"]:
-        assert type(dct) is dict
+    def from_list(cls, formats: list) -> list["VideoFormat"]:
+        assert type(formats) is list
 
         def _get_int(val) -> int:
             try:
@@ -38,7 +38,7 @@ class VideoFormat:
                 return 0
 
         formats: list[VideoFormat] = []
-        for raw_format in dct.get("formats", []):
+        for raw_format in formats:
             if "format_id" in raw_format:
                 id = _get_int(raw_format["format_id"])
                 if id == 0:  # Ids should be numbers
