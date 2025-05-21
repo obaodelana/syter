@@ -25,12 +25,7 @@ class S3:
         try:
             self._client.upload_fileobj(data,
                                         S3.BUCKET_NAME,
-                                        object_name,
-                                        ExtraArgs={
-                                            "Metadata": {
-                                                "delete-today": "true"
-                                            }
-                                        })
+                                        object_name)
         except ClientError as e:
             print(e)
             return None

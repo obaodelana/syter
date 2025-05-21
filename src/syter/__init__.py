@@ -3,6 +3,7 @@ from flask import Flask
 import os
 
 from .yd.routes import yd_bp
+from .transcriber.routes import transcriber_bp
 
 load_dotenv()
 
@@ -14,5 +15,6 @@ def create_app():
     )
 
     app.register_blueprint(yd_bp)
+    app.register_blueprint(transcriber_bp)
 
     return app
