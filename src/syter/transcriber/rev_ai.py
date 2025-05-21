@@ -5,7 +5,9 @@ from .models.transcript import Transcript
 
 
 class Transcriber:
-    def __init__(self, language: str, webhook_url: str | None = None) -> None:
+    def __init__(self,
+                 language: str = "en-us",
+                 webhook_url: str | None = None) -> None:
         assert type(language) is str
         assert webhook_url is None or type(webhook_url) is str
 
