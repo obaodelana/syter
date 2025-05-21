@@ -27,7 +27,6 @@ def submit_video(id: str) -> dict:
     headers = {"Content-Type": "application/json"}
 
     response = requests.get(base_url, params=params, headers=headers)
-    print(response.url)
     try:
         response.raise_for_status()
 

@@ -20,6 +20,8 @@ class S3:
         assert isinstance(data, BytesIO)
         assert type(object_name) is str
 
+        # TODO: Check if already exists in bucket
+
         try:
             self._client.upload_fileobj(data,
                                         S3.BUCKET_NAME,
