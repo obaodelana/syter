@@ -12,9 +12,9 @@ from .models.video_duration import VideoDuration
 class Video:
     def __init__(self,
                  id: str,
-                 duration: VideoDuration):
+                 duration: VideoDuration | None = None):
         assert type(id) is str
-        assert isinstance(duration, VideoDuration)
+        assert duration is None or isinstance(duration, VideoDuration)
 
         self.id = id
         self.duration = duration
@@ -70,13 +70,13 @@ class Video:
                 "-q",  # Quiet
                 "-f", "ba",  # Best audio format
                 # Sort formats by size, bit rate and extension
-                "-S", "+size,+br,+aext"
+                "-S", "+size,+br,+aext",
                 "-o", "-",
                 "-N", "3",  # Use 3 threads
                 self.id]
 
         try:
-            yd = subprocess.run(args, capture_output=True)
+            yd = subprocess.run(args, capture_output=True, check=True)
         except subprocess.CalledProcessError:
             raise Exception()
         return BytesIO(yd.stdout)
