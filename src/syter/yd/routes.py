@@ -2,6 +2,7 @@ from flask import Blueprint, request, abort
 import requests
 import os
 from .video import Video
+from .util.s3 import S3
 
 yd_bp = Blueprint("yd", __name__, url_prefix="/yd")
 
@@ -26,7 +27,6 @@ def submit_video(id: str) -> dict:
     headers = {"Content-Type": "application/json"}
 
     response = requests.get(base_url, params=params, headers=headers)
-    print(response.url)
     try:
         response.raise_for_status()
 
@@ -61,9 +61,27 @@ def download_audio() -> dict:
     Download video to S3 bucket and return pre-signed link
     """
 
-    return {
-        "link": ""
-    }
+    id = request.form.get("id")
+    if not id:
+        abort(401, description="Missing attribute 'id'")
+
+    video = Video(id)
+    bytes = video.open_audio()
+    if not bytes.closed:
+        s3 = S3()
+        object_name = s3.upload_to_bucket(bytes, video.id)
+        if not object_name:
+            abort(500, description="Unable to upload audio")
+
+        url = s3.get_presigned_link(object_name)
+        if not url:
+            abort(500, description="Unable to get presigned URL")
+
+        bytes.close()
+
+        return {"link": url}
+    else:
+        abort(500, description="Could not download file")
 
 
 @yd_bp.post("/retrieve")
