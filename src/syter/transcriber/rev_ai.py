@@ -35,10 +35,10 @@ class Transcriber:
 
         return job.id
 
-    def retrieve_transcript(self, job_id: str) -> Transcript | None:
+    def retrieve_transcript(self, job_id: str) -> Transcript:
         job_status = self._client.get_job_details(job_id).status
         if job_status == JobStatus.TRANSCRIBED:
             transcript_json = self._client.get_transcript_json(job_id)
             return Transcript.from_json(transcript_json)
 
-        return None
+        raise Exception("Transcript is not ready.")

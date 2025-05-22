@@ -14,7 +14,7 @@ def download_audio() -> dict:
 
     id = request.args.get("id")
     if not id:
-        abort(401, description="Missing attribute 'id'")
+        abort(400, description="Missing attribute 'id'")
 
     video = Video(id)
     with video.open_audio() as bytes:
