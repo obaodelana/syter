@@ -52,7 +52,7 @@ class KeyMomentExtractor:
 
         - The caption text should be brief and catchy summary that highlights the key moment. Go for a viral TikTok-like caption that is both informational and trendy. Use the video title and description for context when generating captions. 
         - Aim to generate about 3-10 shorts.
-        - Ensure each short has proper context. Try to include sentences that provide appropriate background information for the key moment.
+        - Ensure each short has proper context. Try to include sentences that provide appropriate background information for the key moment. However, don't include sentences that only add trivial information.
         - Prioritize longer shorts that tell a story over generating a large number of shorts.
         """
 
@@ -77,4 +77,7 @@ class KeyMomentExtractor:
         model_output = response.output_text
         lines = model_output.split("\n")
 
-        return [KeyMoment(line) for line in lines]
+        try:
+            return [KeyMoment(line) for line in lines]
+        except ValueError:
+            return []

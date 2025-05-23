@@ -7,11 +7,12 @@ class KeyMoment:
         starting_bracket = text.index("[")
         ending_bracket = text.index("]")
 
-        self.segments = list(map(
-            lambda i: int(i),
-            text[starting_bracket+1:ending_bracket].split(",")
-        ))
+        self._segments = text[starting_bracket+1:ending_bracket].split(",")
         self.caption = text[ending_bracket+1:].strip()
 
+    @property
+    def segments(self):
+        return list(map(int, self._segments))
+
     def __str__(self) -> str:
-        return f"{", ".join(self.segments)} {self.caption}"
+        return f"[{",".join(self._segments)}] {self.caption}"

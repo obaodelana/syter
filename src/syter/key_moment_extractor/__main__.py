@@ -1,9 +1,9 @@
-from .ai import KeyMomentExtractor
+from .kme import KeyMomentExtractor
 
 extractor = KeyMomentExtractor()
 
 print(extractor.extract(
-    "How  to  Recruit a Co-founder",
+    "How to Recruit a Co-founder",
     "Join Jack Ratzinger, co-founder of SeatGeek, as he shares his real-world experience building startup teams. In this talk, Jack covers how to recruit a co-founder and employees, what to look for in team members, and how to spark interest in your company. Get tips on screening candidates, making offers, and handling technical hires. Jack also dives into the unique challenges of finding a co-founder. Learn why recruiting is an ongoing, essential part of startup success—and why investing time in building your team pays off.",
     [
         "Hi,  my  name's  Jack  Ratzinger  and  I'm  gonna  be  talking  about  how  to  recruit  a  co-founder  and  a  team  for  your  startup.",
