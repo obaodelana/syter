@@ -1,6 +1,6 @@
 import json
 
-from main import Transcriber, Transcript
+from .rev_ai import Transcriber, Transcript
 
 
 def main():

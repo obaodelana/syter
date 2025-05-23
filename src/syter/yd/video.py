@@ -1,5 +1,6 @@
 from io import BytesIO
 import subprocess
+from contextlib import contextmanager
 
 from .models.file_extension import FileExtension
 from .models.resolution import Resolution
@@ -62,7 +63,8 @@ class Video:
 
         return BytesIO(yd.stdout)
 
-    def open_audio(self) -> BytesIO:
+    @contextmanager
+    def open_audio(self):
         """
         Download the lowest quality audio file to a buffer in memory.
         """
@@ -75,11 +77,12 @@ class Video:
                 "-N", "3",  # Use 3 threads
                 self.id]
 
+        yd = subprocess.run(args, capture_output=True, check=True)
+        bytes = BytesIO(yd.stdout)
         try:
-            yd = subprocess.run(args, capture_output=True, check=True)
-        except subprocess.CalledProcessError:
-            raise Exception()
-        return BytesIO(yd.stdout)
+            yield bytes
+        finally:
+            bytes.close()
 
     def __str__(self) -> str:
         return str({
