@@ -50,13 +50,13 @@ def retrieve_transcript() -> dict:
     return {
         "id": job_id,
         "transcript": {
-            "start_time": transcript.start_time,
-            "end_time": transcript.end_time,
-            "text": transcript.text,
+            "start_time": str(transcript.start_time),
+            "end_time": str(transcript.end_time),
+            "text": str(transcript.text),
             "sentences": [
                 {
-                    "start_time": transcript[i].start_time,
-                    "end_time": transcript[i].end_time,
+                    "start_time": str(transcript[i].start_time),
+                    "end_time": str(transcript[i].end_time),
                     "text": transcript[i].text
                 }
                 for i in range(len(transcript))
