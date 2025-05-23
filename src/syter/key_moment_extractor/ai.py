@@ -7,7 +7,10 @@ from .models.key_moment import KeyMoment
 
 class KeyMomentExtractor:
     def __init__(self) -> None:
-        self._client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        api_key = os.getenv("OPENAI_API_KEY")
+        assert api_key is not None, "Can't find 'OPENAI_API_KEY' environment variable"
+
+        self._client = OpenAI(api_key=api_key)
         self.model = "gpt-4.1-nano"
 
     def extract(self,

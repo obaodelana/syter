@@ -1,4 +1,4 @@
-from main import KeyMomentExtractor
+from .ai import KeyMomentExtractor
 
 extractor = KeyMomentExtractor()
 
