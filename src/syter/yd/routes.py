@@ -12,7 +12,7 @@ def download_audio() -> dict:
     Download video to S3 bucket and return pre-signed link
     """
 
-    id = request.args.get("id")
+    id = request.form.get("id")
     if not id:
         abort(400, description="Missing attribute 'id'")
 

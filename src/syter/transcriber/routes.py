@@ -12,13 +12,14 @@ def submit_audio() -> dict:
     Submit job to RevAI
     """
 
-    link = request.args.get("link")
-    language_code = request.args.get("language_code")
+    link = request.form.get("link")
+    language_code = request.form.get("language_code")
 
     if not link or not language_code:
         abort(400, description="Required parameters are 'link' and 'language_code'")
 
-    transcriber = Transcriber(language_code, url_for(".retrieve_transcript"))
+    # TODO: Pass web hook url
+    transcriber = Transcriber(language_code)
     id = transcriber.submit_job(link)
 
     return {
