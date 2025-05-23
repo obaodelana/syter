@@ -4,6 +4,7 @@ import os
 
 from .yd.routes import yd_bp
 from .transcriber.routes import transcriber_bp
+from .key_moment_extractor.routes import kme_bp
 
 load_dotenv()
 
@@ -16,5 +17,6 @@ def create_app():
 
     app.register_blueprint(yd_bp)
     app.register_blueprint(transcriber_bp)
+    app.register_blueprint(kme_bp)
 
     return app
